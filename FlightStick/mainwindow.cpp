@@ -84,9 +84,11 @@ void MainWindow::pollTimerOverflowed(){
             button_2 = (bool)((receive_buffer[2] >> 1) & 1);
             backlight = receive_buffer[3];
 
+            ///Display on UI
             ui->label_X->setText(QString("X: ").append(QString::number(joystick_x)));
             ui->label_Y->setText(QString("Y: ").append(QString::number(joystick_y)));
-            //!TBD Indicator
+            ui->widget_Indicator->setX((1.0f / 127.0f) * (float)joystick_x);
+            ui->widget_Indicator->setY(-(1.0f / 127.0f) * (float)joystick_y);
             ui->pushButton_1->setChecked(button_1);
             ui->pushButton_1->setFlat(button_1);
             ui->pushButton_2->setChecked(button_2);
@@ -133,6 +135,8 @@ void MainWindow::appReset(){
     ui->pushButton_Use->setCheckable(false);
     ui->label_X->setText("X: 0");
     ui->label_Y->setText("Y: 0");
+    ui->widget_Indicator->setX(0);
+    ui->widget_Indicator->setY(0);
     ui->horizontalSlider_Backlight->setValue(0);
     ui->pushButton_1->setChecked(false);
     ui->pushButton_1->setFlat(false);

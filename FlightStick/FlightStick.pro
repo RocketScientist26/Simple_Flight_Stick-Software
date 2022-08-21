@@ -11,11 +11,13 @@ LIBS += \
         -L$$_PRO_FILE_PWD_/Hidapi -lhidapi -lsetupapi
 
 SOURCES += \
+        Indicator/indicator.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
         Hidapi/hidapi.h \
+        Indicator/indicator.h \
         mainwindow.h
 
 FORMS += \

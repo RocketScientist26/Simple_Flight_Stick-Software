@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="default.qrc">
-    <normaloff>:/Resources/icon.ico</normaloff>:/Resources/icon.ico</iconset>
+    <normaloff>:/Resources/icon.svg</normaloff>:/Resources/icon.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QComboBox" name="comboBox_Devices">
@@ -200,7 +200,7 @@
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QWidget" name="widget_RsFlightStickIndicator" native="true">
+   <widget class="Indicator" name="widget_Indicator" native="true">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -242,7 +242,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
 &lt;p&gt;
 
-&lt;a href=&quot;http://rocket-scientist.me&quot;&gt;&lt;img src=&quot;:/Resources/logo.png&quot;/&gt;&lt;/a&gt;
+&lt;a href=&quot;https://rocket-scientist.me&quot;&gt;&lt;img src=&quot;:/Resources/logo.svg&quot;/&gt;&lt;/a&gt;
 
 &lt;/p&gt;
 &lt;/body&gt;&lt;/html&gt;</string>
@@ -256,6 +256,9 @@
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
    </widget>
    <zorder>comboBox_Devices</zorder>
    <zorder>pushButton_Use</zorder>
@@ -264,7 +267,7 @@
    <zorder>label_Backlight</zorder>
    <zorder>pushButton_1</zorder>
    <zorder>pushButton_2</zorder>
-   <zorder>widget_RsFlightStickIndicator</zorder>
+   <zorder>widget_Indicator</zorder>
    <zorder>label_Y</zorder>
    <zorder>label_X</zorder>
    <zorder>line</zorder>
@@ -287,6 +290,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Indicator</class>
+   <extends>QWidget</extends>
+   <header>Indicator/indicator.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>comboBox_Devices</tabstop>
   <tabstop>pushButton_Refresh</tabstop>
