@@ -2,24 +2,28 @@
 #include "ui_mainwindow.h"
 
 //MainWindow
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+{
     //UI
     setFixedSize(366, 404);
     ui->setupUi(this);
 
     //Poll timer
-    PollTimer = new QTimer(this);
-    connect(PollTimer, SIGNAL(timeout()), this, SLOT(pollTimerOverflowed()));
+    poll_timer = new QTimer(this);
+    connect(poll_timer, SIGNAL(timeout()), this, SLOT(onPollTimerOverflowed()));
 
     //HID
     hid_init();
     on_actionRefresh_triggered();
 }
-MainWindow::~MainWindow(){
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::on_actionUse_triggered(){
+//UI Interrutps
+void MainWindow::on_actionUse_triggered()
+{
     if(!connected){
         QString serial = serials.at(ui->comboBox_Devices->currentIndex()).toLocal8Bit();
         hid_dev = hid_open(VID, PID, (const wchar_t *)&serial.data()[0]);
@@ -37,18 +41,20 @@ void MainWindow::on_actionUse_triggered(){
             ui->pushButton_Use->setCheckable(true);
             ui->pushButton_Use->setChecked(true);
 
-            PollTimer->start(POLL_TIME_MS);
+            poll_timer->start(POLL_TIME_MS);
         }
     }else{
         appReset();
     }
 }
-void MainWindow::on_actionSetBacklight_triggered(){
+void MainWindow::on_actionSetBacklight_triggered()
+{
     if((uint8_t)ui->horizontalSlider_Backlight->value() != backlight){
         write_rq = true;
     }
 }
-void MainWindow::on_actionRefresh_triggered(){
+void MainWindow::on_actionRefresh_triggered()
+{
     ui->comboBox_Devices->clear();
     serials.clear();
     hid_dev_info = hid_enumerate(VID, PID);
@@ -71,20 +77,23 @@ void MainWindow::on_actionRefresh_triggered(){
     }
 }
 
-void MainWindow::pollTimerOverflowed(){
-    PollTimer->stop();
+//Timer interrupt
+void MainWindow::onPollTimerOverflowed()
+{
+    poll_timer->stop();
     if(connected){
         int res = hid_read(hid_dev, receive_buffer, sizeof(receive_buffer));
         if(res != sizeof(receive_buffer)){
             appReset();
         }else{
+            //Store data from packet to variables
             joystick_x = *(int8_t *)&receive_buffer[0];
             joystick_y = *(int8_t *)&receive_buffer[1];
             button_1 = (bool)(receive_buffer[2] & 1);
             button_2 = (bool)((receive_buffer[2] >> 1) & 1);
             backlight = receive_buffer[3];
 
-            ///Display on UI
+            //Display variables on UI
             ui->label_X->setText(QString("X: ").append(QString::number(joystick_x)));
             ui->label_Y->setText(QString("Y: ").append(QString::number(joystick_y)));
             ui->widget_Indicator->setX((1.0f / 127.0f) * (float)joystick_x);
@@ -97,6 +106,7 @@ void MainWindow::pollTimerOverflowed(){
                 ui->horizontalSlider_Backlight->setValue(backlight);
             }
 
+            //If packet should be sent, send it (set buttons backlight brightness)
             if(write_rq){
                 write_rq = false;
                 transmit_buffer[1] = (uint8_t)ui->horizontalSlider_Backlight->value();
@@ -105,14 +115,16 @@ void MainWindow::pollTimerOverflowed(){
                     return;
                 }
             }
-            PollTimer->start(POLL_TIME_MS);
+            poll_timer->start(POLL_TIME_MS);
         }
     }
 }
 
-void MainWindow::appReset(){
+//App reset function
+void MainWindow::appReset()
+{
     //Timers
-    PollTimer->stop();
+    poll_timer->stop();
 
     hid_close(hid_dev);
 

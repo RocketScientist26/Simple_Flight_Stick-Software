@@ -19,8 +19,8 @@ class MainWindow : public QMainWindow{
         ~MainWindow();
 
     private slots:
-        //Timers
-        void pollTimerOverflowed();
+        //Timer
+        void onPollTimerOverflowed();
         //UI
         void on_actionUse_triggered();
         void on_actionSetBacklight_triggered();
@@ -31,22 +31,26 @@ class MainWindow : public QMainWindow{
         Ui::MainWindow *ui;
 
         //App
-        QTimer *PollTimer;
+        QTimer *poll_timer;
         bool connected;
         bool write_rq;
         QStringList serials;
         hid_device_info *hid_dev_info;
         hid_device *hid_dev;
 
-        //Raw data
-        uint8_t receive_buffer[4] = {
-            //Bits: [XXXXXXXX][YYYYYYYY][BUTTON_1][BUTTON_2][0][0][0][0][0][0][BBBBBBBB]
-            0, 0, 0b00000000, 0
-        };
-        uint8_t transmit_buffer[2] = {
-            //Bits: [IIIIIIII][BBBBBBBB]
-            0, 100
-        };
+        //Raw USB HID transmit/receive data
+        /*
+            -- Receive --
+            Data: [X][Y][BUTTON_1][BUTTON_2][6_UNUSED_BITS][BRIGHTNESS]
+            Bits: [XXXXXXXX][YYYYYYYY][BUTTON_1][BUTTON_2][0][0][0][0][0][0][BBBBBBBB]
+        */
+        uint8_t receive_buffer[4] = { 0, 0, 0b00000000, 0 };
+        /*
+            -- Transmit --
+            Data: [REPORT_ID_BYTE_ALWAYS_0][BRIGHTNESS]
+            Bits: [IIIIIIII][BBBBBBBB]
+        */
+        uint8_t transmit_buffer[2] = { 0, 100 };
 
         //Values
         int8_t joystick_x;
@@ -55,6 +59,7 @@ class MainWindow : public QMainWindow{
         bool button_2;
         uint8_t backlight;
 
+        //Private functions
         void appReset();
 };
 
